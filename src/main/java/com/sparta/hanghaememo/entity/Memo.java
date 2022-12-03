@@ -17,7 +17,7 @@ public class Memo extends Timestamped {
     private String title;
 
     @Column(nullable = false)       // 작성자명
-    private String username;
+     private String username;
 
     @Column(nullable = false)       // 작성내용
     private String contents;
@@ -26,18 +26,19 @@ public class Memo extends Timestamped {
     private String password;
 
 
-    public Memo(MemoRequestDto requestDto){
-        this.title      =   requestDto.getTitle();                 // Setting Entity
-        this.username   =   requestDto.getUsername();              // DTO -> Entity
-        this.contents   =   requestDto.getContents();
-        this.password   =   requestDto.getPassword();
+    // Dto -> Entity
+    public Memo(MemoRequestDto requestDto, String username, String password){
+        this.title      =   requestDto.getTitle();                  // Setting Entity
+        this.contents   =   requestDto.getContents();               // DTO -> Entity
+        this.username   =   username;
+        this.password   =   password;
     }
 
-    // Dto -> Entity
-    public void update(MemoRequestDto requestDto) {                 // Update
-        this.title      =   requestDto.getTitle();                  // DTO -> Entity
-        this.username   =   requestDto.getUsername();
-        this.contents   =   requestDto.getContents();
-        this.password   =   requestDto.getPassword();
+    // Dto -> Entity and update
+    public void update(MemoRequestDto requestDto, String username, String password) {
+        this.title      =   requestDto.getTitle();                  // Setting Entity
+        this.contents   =   requestDto.getContents();               // DTO -> Entity
+        this.username   =   username;
+        this.password   =   password;
     }
 }
