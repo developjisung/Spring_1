@@ -1,8 +1,8 @@
 package com.sparta.hanghaememo.service;
 
-import com.sparta.hanghaememo.dto.MemoDto.DeleteResponseDto;
 import com.sparta.hanghaememo.dto.MemoDto.MemoRequestDto;
 import com.sparta.hanghaememo.dto.MemoDto.MemoResponseDto;
+import com.sparta.hanghaememo.dto.ResponseDto;
 import com.sparta.hanghaememo.entity.Memo;
 import com.sparta.hanghaememo.entity.User;
 import com.sparta.hanghaememo.entity.UserRoleEnum;
@@ -10,11 +10,12 @@ import com.sparta.hanghaememo.jwt.JwtUtil;
 import com.sparta.hanghaememo.repository.MemoRepository;
 import com.sparta.hanghaememo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,7 +91,7 @@ public class MemoService {
             // 5. 유저 권한에 따른 동작 방식 결정
             if(userRoleEnum == UserRoleEnum.USER){
                 memo = memoRepository.findById(id).orElseThrow(                                         // find memo
-                        () -> new IllegalArgumentException("게시물이 존재하지 않습니다.")
+                        () -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다.")
                 );
 
                 if(memo.getUsername().equals(user.getUsername())){                                      // 자기 자신이 작성한 게시물이면
@@ -106,12 +107,12 @@ public class MemoService {
             }
             return new MemoResponseDto(memo);                                                           // Entity -> DTO 변환 후 반환
         } else {
-            return null;
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
     }
 
     // DB delete function (data delete)
-    public DeleteResponseDto deleteMemo(Long id, HttpServletRequest request) {
+    public ResponseDto deleteMemo(Long id, HttpServletRequest request) {
 
         // 1. jwt 내 포함된 정보를 토큰 변수에 저장
         String token = jwtUtil.resolveToken(request);                                                   // Client에서 token 묶어서 보낸 것을 jwt에서 뽑아내 token에 저장
@@ -147,9 +148,9 @@ public class MemoService {
                 );
                 memoRepository.deleteById(id);
             }
-            return  new DeleteResponseDto("삭제 성공","수정필요");
+            return  new ResponseDto("삭제 성공", HttpStatus.OK.value());
         } else {
-            return null;
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
     }
 

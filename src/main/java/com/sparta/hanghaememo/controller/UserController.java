@@ -1,15 +1,19 @@
 package com.sparta.hanghaememo.controller;
 
+import com.sparta.hanghaememo.dto.ResponseDto;
 import com.sparta.hanghaememo.dto.UserDto.LoginRequestDto;
 import com.sparta.hanghaememo.dto.UserDto.SignupRequestDto;
-import com.sparta.hanghaememo.dto.UserDto.UserResponseDto;
 import com.sparta.hanghaememo.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,11 +23,21 @@ public class UserController {
 
     // 회원가입(User info validation  -> DB insert)
     @PostMapping("/signup")
-    public UserResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) { return userService.signup(signupRequestDto);}
+    public ResponseEntity<ResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequestDto){
+        try{
+            return ResponseEntity.ok(userService.signup(signupRequestDto));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+    }
 
     // 로그인(Jwt create and return jwt to web)
     @PostMapping("/login")
-    public UserResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        return userService.login(loginRequestDto, response);
+    public ResponseEntity<ResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        try{
+            return ResponseEntity.ok(userService.login(loginRequestDto, response));
+        }catch (Exception e){
+            return ResponseEntity.ok(new ResponseDto(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
     }
 }

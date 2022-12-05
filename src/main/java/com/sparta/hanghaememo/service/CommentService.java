@@ -3,7 +3,7 @@ package com.sparta.hanghaememo.service;
 
 import com.sparta.hanghaememo.dto.CommentDto.CommentRequestDto;
 import com.sparta.hanghaememo.dto.CommentDto.CommentResponseDto;
-import com.sparta.hanghaememo.dto.CommentDto.DeleteResponseDto;
+import com.sparta.hanghaememo.dto.ResponseDto;
 import com.sparta.hanghaememo.entity.Comment;
 import com.sparta.hanghaememo.entity.User;
 import com.sparta.hanghaememo.entity.UserRoleEnum;
@@ -12,9 +12,11 @@ import com.sparta.hanghaememo.repository.CommentRepository;
 import com.sparta.hanghaememo.repository.MemoRepository;
 import com.sparta.hanghaememo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -47,13 +49,13 @@ public class CommentService {
             );
 
             // 4. DTO -> Entity 변환
-            Comment comment = new Comment(requestDto, id, user.getUsername());                              // DTO -> Entity
+            Comment comment = new Comment(requestDto, id, user.getUsername());                          // DTO -> Entity
 
             // 5. DB insert
-            commentRepository.save(comment);                                                                // DB Save
-            return new CommentResponseDto(comment);                                                         // return Response  Entity -> DTO
+            commentRepository.save(comment);                                                            // DB Save
+            return new CommentResponseDto(comment);                                                     // return Response  Entity -> DTO
         } else {
-            return null;
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
     }
 
@@ -69,24 +71,19 @@ public class CommentService {
         if (token != null) {
             claims = valid(token);
 
-            // 3. 해당 댓글 존재 여부 확인
-            commentRepository.findById(id).orElseThrow(
-                    () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
-            );
-
-            // 4. 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+            // 3. 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
 
-            // 5. 유저 권한 GET
+            // 4. 유저 권한 GET
             UserRoleEnum userRoleEnum = user.getRole();
             Comment comment;
 
-            // 6. 유저 권한에 따른 동작 방식 결정
+            // 5. 유저 권한에 따른 동작 방식 결정
             if(userRoleEnum == UserRoleEnum.USER){
-                comment = commentRepository.findById(user.getId()).orElseThrow(                         // find memo
-                        () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+                comment = commentRepository.findById(id).orElseThrow(                                   // find memo
+                        () -> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다.")
                 );
 
                 if(comment.getUsername().equals(user.getUsername())){
@@ -97,18 +94,18 @@ public class CommentService {
                 }
             }else{
                 comment = commentRepository.findById(id).orElseThrow(                                   // find memo
-                        () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+                        () -> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다.")
                 );
                 comment.update(requestDto);                                                             // DB Update
             }
 
             return new CommentResponseDto(comment);                                                     // Entity -> DTO 변환 후 반환
         } else {
-            return null;
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
     }
 
-    public DeleteResponseDto deletecomment(Long id, HttpServletRequest request){
+    public ResponseDto deletecomment(Long id, HttpServletRequest request){
 
         // 1. jwt 내 포함된 정보를 토큰 변수에 저장
         String token = jwtUtil.resolveToken(request);                                                   // Client에서 token 묶어서 보낸 것을 jwt에서 뽑아내 token에 저장
@@ -118,24 +115,19 @@ public class CommentService {
         if (token != null) {
             claims = valid(token);
 
-            // 3. 해당 댓글 존재 여부 확인
-            commentRepository.findById(id).orElseThrow(
-                    () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
-            );
-
-            // 4. 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+            // 3. 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
 
-            // 5. 유저 권한 GET
+            // 4. 유저 권한 GET
             UserRoleEnum userRoleEnum = user.getRole();
             Comment comment;
 
-            // 6. 유저 권한에 따른 동작 방식 결정
+            // 5. 유저 권한에 따른 동작 방식 결정
             if(userRoleEnum == UserRoleEnum.USER){
-                comment = commentRepository.findById(user.getId()).orElseThrow(                         // find memo
-                        () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+                comment = commentRepository.findById(id).orElseThrow(                                   // find memo
+                        () -> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다.")
                 );
                 if(comment.getUsername().equals(user.getUsername())){
                     commentRepository.deleteById(id);                                                   // DB Update
@@ -145,14 +137,14 @@ public class CommentService {
                 }
             }else{
                 comment = commentRepository.findById(id).orElseThrow(                                   // find memo
-                        () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+                        () -> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다.")
                 );
                 commentRepository.deleteById(id);
             }
 
-            return  new DeleteResponseDto("삭제 성공","수정필요");
+            return  new ResponseDto("삭제 성공", HttpStatus.OK.value());
         } else {
-            return null;
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
     }
 
@@ -163,7 +155,7 @@ public class CommentService {
             claims = jwtUtil.getUserInfoFromToken(token);                                               // 토큰에서 사용자 정보 가져오기
             return claims;
         } else {
-            throw new IllegalArgumentException("Token Error");
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
     }
 }

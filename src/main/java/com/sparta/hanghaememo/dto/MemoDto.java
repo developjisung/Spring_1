@@ -24,7 +24,7 @@ public class MemoDto {
 
 
     @Getter
-    public static class MemoResponseDto{                // 응답 Dto
+    public static class MemoResponseDto extends ResponseDto{                // 응답 Dto
         private Long id;                                // id
         private String title;                           // 제목
         private String username;                        // 작성자명
@@ -40,19 +40,6 @@ public class MemoDto {
             this.contents   = memo.getContents();       // 작성내용
             this.createdAt  = memo.getCreatedAt();      // 작성시간
             this.modifiedAt = memo.getModifiedAt();     // 수정시간
-        }
-    }
-
-    @Getter
-    public static class DeleteResponseDto{              // 응답 Dto (삭제)
-        private String msg;                             // 메세지
-        private String statusCode;                      // 상태코드
-
-
-        // DTO Constructor
-        public DeleteResponseDto(String msg, String statusCode){
-            this.msg        = msg;                      // 메세지
-            this.statusCode = statusCode;               // 상태코드
         }
     }
 }

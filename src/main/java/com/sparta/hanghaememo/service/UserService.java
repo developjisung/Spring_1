@@ -1,18 +1,19 @@
 package com.sparta.hanghaememo.service;
 
 
+import com.sparta.hanghaememo.dto.ResponseDto;
 import com.sparta.hanghaememo.dto.UserDto.LoginRequestDto;
 import com.sparta.hanghaememo.dto.UserDto.SignupRequestDto;
-import com.sparta.hanghaememo.dto.UserDto.UserResponseDto;
 import com.sparta.hanghaememo.entity.User;
 import com.sparta.hanghaememo.entity.UserRoleEnum;
 import com.sparta.hanghaememo.jwt.JwtUtil;
 import com.sparta.hanghaememo.repository.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 @Service
@@ -23,7 +24,7 @@ public class UserService {
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
-    public UserResponseDto signup(SignupRequestDto signupRequestDto) {
+    public ResponseDto signup(SignupRequestDto signupRequestDto) {
 
         // 1. USERNAME, PASSWORD SETTING
         String username = signupRequestDto.getUsername();                                           // username setting (DTO ->  val)
@@ -32,7 +33,7 @@ public class UserService {
         // 2. find user (duplicate user)
         Optional<User> found = userRepository.findByUsername(username);                             // 회원 중복 확인
         if (found.isPresent()) {                                                                    // isPresent - > found가 null이 아니라면 true 반환
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");                          // isPresent - > Optional class에 존재하는 함수
+            throw new IllegalArgumentException("중복된 사용자명입니다.");                          // isPresent - > Optional class에 존재하는 함수
         }
 
         // 3. user role setting
@@ -49,11 +50,11 @@ public class UserService {
         // 5. DB insert
         User user = new User(username, password, role);                                             // DTO -> Entity
         userRepository.save(user);
-        return new UserResponseDto("회원가입 성공", 200);
+        return new ResponseDto("회원가입 성공", HttpStatus.OK.value());
     }
 
     @Transactional(readOnly = true)
-    public UserResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
 
         // 1. USERNAME, PASSWORD SETTING
         String username = loginRequestDto.getUsername();
@@ -70,6 +71,6 @@ public class UserService {
 
         // 3. create Jwt and add to response header
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
-        return new UserResponseDto("로그인 성공", 200);
+        return new ResponseDto("로그인 성공", HttpStatus.OK.value());
     }
 }

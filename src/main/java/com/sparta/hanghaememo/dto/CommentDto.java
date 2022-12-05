@@ -19,7 +19,7 @@ public class CommentDto {
     }
 
     @Getter
-    public static class CommentResponseDto{                 // 응답 Dto
+    public static class CommentResponseDto extends ResponseDto{                 // 응답 Dto
         private Long id;                                    // id
         private String content;                             // 댓글 내용
         private String username;                            // 작성자명
@@ -33,17 +33,6 @@ public class CommentDto {
             this.content    = comment.getContents();        // 작성내용
             this.createdAt  = comment.getCreatedAt();       // 작성시간
             this.modifiedAt = comment.getModifiedAt();      // 수정시간
-        }
-    }
-
-    @Getter
-    public static class DeleteResponseDto{                  // 응답 Dto (삭제)
-        private String msg;                                 // 메세지
-        private String statusCode;                          // 상태코드
-
-        public DeleteResponseDto(String msg, String statusCode){
-            this.msg        = msg;                          // 메세지
-            this.statusCode = statusCode;                   // 상태코드
         }
     }
 }
