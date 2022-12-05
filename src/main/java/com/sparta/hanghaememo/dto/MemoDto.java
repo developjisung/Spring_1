@@ -8,24 +8,29 @@ import java.time.LocalDateTime;
 
 public class MemoDto {
 
+    /*  Memo Dto
+        MemoRequestDto      요청 Dto(작성, 수정)
+        MemoResponseDto     응답 Dto(작성, 조회, 수정)
+        DeleteResponseDto   응답 Dto(삭제)        */
+
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class MemoRequestDto {        // 요청 Dto
+    public static class MemoRequestDto {                // 요청 Dto
 
-        private String title;                   // 제목
-        private String contents;                // 작성내용
+        private String title;                           // 제목
+        private String contents;                        // 작성내용
     }
 
 
     @Getter
-    public static class MemoResponseDto{        // 응답 Dto
-        private Long id;                         // id
-        private String title;                   // 제목
-        private String username;                // 작성자명
-        private String contents;                // 작성내용
-        private LocalDateTime createdAt;        // 작성시간
-        private LocalDateTime modifiedAt;       // 수정시간
+    public static class MemoResponseDto{                // 응답 Dto
+        private Long id;                                // id
+        private String title;                           // 제목
+        private String username;                        // 작성자명
+        private String contents;                        // 작성내용
+        private LocalDateTime createdAt;                // 작성시간
+        private LocalDateTime modifiedAt;               // 수정시간
 
         //Entity -> Dto
         public MemoResponseDto(Memo memo){

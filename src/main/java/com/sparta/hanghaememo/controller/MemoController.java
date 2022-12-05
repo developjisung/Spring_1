@@ -14,7 +14,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class MemoController {
-    private final MemoService memoService;                                          // connect to service
+
+    // connect to MemoService
+    private final MemoService memoService;
 
     // DB save
     @PostMapping("/memos")
@@ -35,16 +37,14 @@ public class MemoController {
     }
 
     // DB update
-    @PatchMapping("/memos")
+    @PatchMapping("/memos/{id}")
 //    @PutMapping("/memos/{id}")
-    public MemoResponseDto updateMemo(@RequestBody MemoRequestDto requestDto, HttpServletRequest request){
-        return memoService.update(requestDto, request);
+    public MemoResponseDto updateMemo(@PathVariable Long id, @RequestBody MemoRequestDto requestDto, HttpServletRequest request){
+        return memoService.update(id,requestDto, request);
     }
 
     // DB delete
-    @DeleteMapping("/memos")
-    public DeleteResponseDto deleteMemo(HttpServletRequest request){
-        return memoService.deleteMemo(request);
-    }
+    @DeleteMapping("/memos/{id}")
+    public DeleteResponseDto deleteMemo(@PathVariable Long id, HttpServletRequest request){ return memoService.deleteMemo(id, request);}
 }
 

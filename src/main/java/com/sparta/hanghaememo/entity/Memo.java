@@ -28,17 +28,15 @@ public class Memo extends Timestamped {
 
     // Dto -> Entity
     public Memo(MemoRequestDto requestDto, String username, String password){
-        this.title      =   requestDto.getTitle();                  // Setting Entity
-        this.contents   =   requestDto.getContents();               // DTO -> Entity
-        this.username   =   username;
-        this.password   =   password;
+        this.title      =   requestDto.getTitle();                  // 작성제목
+        this.contents   =   requestDto.getContents();               // 작성내용
+        this.username   =   username;                               // 작성자명
+        this.password   =   password;                               // 비밀번호
     }
 
     // Dto -> Entity and update
-    public void update(MemoRequestDto requestDto, String username, String password) {
+    public void update(MemoRequestDto requestDto) {
         this.title      =   requestDto.getTitle();                  // Setting Entity
         this.contents   =   requestDto.getContents();               // DTO -> Entity
-        this.username   =   username;
-        this.password   =   password;
     }
 }

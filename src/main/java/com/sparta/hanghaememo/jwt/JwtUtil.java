@@ -1,6 +1,7 @@
 package com.sparta.hanghaememo.jwt;
 
 
+import com.sparta.hanghaememo.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
@@ -23,7 +24,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";                              // Token Header
-//    public static final String AUTHORIZATION_KEY = "auth";                                        // Token Key
+    public static final String AUTHORIZATION_KEY = "auth";                                        // Token Key
     private static final String BEARER_PREFIX = "Bearer ";                                          // Token Prefix
     private static final long TOKEN_TIME = 60 * 60 * 1000L;                                         // Token 유지시간
 
@@ -48,12 +49,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-        public String createToken(String username) {                                                // token create
+    public String createToken(String username, UserRoleEnum role) {                                 // token create
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username)
+                        .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)

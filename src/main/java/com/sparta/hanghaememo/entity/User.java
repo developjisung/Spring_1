@@ -19,9 +19,14 @@ public class User {
     @Column(nullable = false)
     private String password;                    // 비밀번호
 
-    public User(String username, String password) {
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;                  // 사용자권한
+
+    public User(String username, String password, UserRoleEnum role) {
         this.username   =   username;           // 사용자명
         this.password   =   password;           // 비밀번호
+        this.role       =   role;               // 사용자권한
     }
 
 }
