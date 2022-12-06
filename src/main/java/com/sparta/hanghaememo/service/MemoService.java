@@ -46,7 +46,7 @@ public class MemoService {
             );
 
             // 4. DTO -> Entity 변환
-            Memo memo = new Memo(requestDto, user.getUsername(),user.getPassword(), user.getId());                    // DTO -> Entity
+            Memo memo = new Memo(requestDto, user.getUsername(),user.getPassword(), user.getId());      // DTO -> Entity
 
             // 5. DB insert
             memoRepository.save(memo);                                                                  // DB Save
@@ -80,7 +80,7 @@ public class MemoService {
          );
          List<Comment> comment = commentRepository.findAllByMemo(memo);
          if(comment.isEmpty()){
-             return new MemoResponseDto(memo);                                                               // Entity -> DTO
+             return new MemoResponseDto(memo);                                                          // Entity -> DTO
          }else{
              return new MemoResponseDto(memo, (ArrayList<Comment>) comment);
          }
@@ -113,7 +113,7 @@ public class MemoService {
                         () -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다.")
                 );
 
-                if(memo.getUserid().equals(user.getId())){                                      // 자기 자신이 작성한 게시물이면
+                if(memo.getUserid().equals(user.getId())){                                              // 자기 자신이 작성한 게시물이면
                     memo.update(requestDto);                                                            // DB Update
                 }else{
                     throw new IllegalArgumentException("게시물 수정 권한이 없습니다.");
@@ -156,7 +156,7 @@ public class MemoService {
                         () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
                 );
 
-                if(memo.getUserid().equals(user.getId())){                                      // 자기 자신이 작성한 게시물이면
+                if(memo.getUserid().equals(user.getId())){                                              // 자기 자신이 작성한 게시물이면
                     memoRepository.deleteById(id);                                                      // 해당 게시물 삭제
                 }else{
                     throw new IllegalArgumentException("게시물 삭제 권한이 없습니다.");
@@ -176,8 +176,8 @@ public class MemoService {
     public Claims valid(String token){
         Claims claims;
 
-        if (jwtUtil.validateToken(token)) {                                         // jwt 발행 시 만들어졌던 key와 token 값이 동일한지 검증
-            claims = jwtUtil.getUserInfoFromToken(token);                           // 토큰에서 사용자 정보 가져오기
+        if (jwtUtil.validateToken(token)) {                                                             // jwt 발행 시 만들어졌던 key와 token 값이 동일한지 검증
+            claims = jwtUtil.getUserInfoFromToken(token);                                               // 토큰에서 사용자 정보 가져오기
             return claims;
         } else {
             throw new IllegalArgumentException("Token Error");

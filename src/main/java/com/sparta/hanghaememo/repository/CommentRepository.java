@@ -9,5 +9,4 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByMemo(Memo memo);
-    Comment findByMemo(Memo memo);
 }

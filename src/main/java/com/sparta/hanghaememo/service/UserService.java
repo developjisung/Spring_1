@@ -33,7 +33,7 @@ public class UserService {
         // 2. find user (duplicate user)
         Optional<User> found = userRepository.findByUsername(username);                             // 회원 중복 확인
         if (found.isPresent()) {                                                                    // isPresent - > found가 null이 아니라면 true 반환
-            throw new IllegalArgumentException("중복된 사용자명입니다.");                          // isPresent - > Optional class에 존재하는 함수
+            throw new IllegalArgumentException("중복된 사용자명입니다.");                               // isPresent - > Optional class에 존재하는 함수
         }
 
         // 3. user role setting

@@ -50,7 +50,7 @@ public class CommentService {
             );
 
             // 4. DTO -> Entity 변환
-            Comment comment = new Comment(requestDto, user.getUsername(), user.getId(), memo);                          // DTO -> Entity
+            Comment comment = new Comment(requestDto, user.getUsername(), user.getId(), memo);          // DTO -> Entity
 
             // 5. DB insert
             commentRepository.save(comment);                                                            // DB Save

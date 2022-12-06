@@ -63,7 +63,7 @@ public class Comment extends Timestamped{
     @Column(nullable = false)       // 작성자 id
     private Long userid;
 
-    @ManyToOne
+    @ManyToOne                      // 게시물 id
     @JoinColumn(name = "memo_id", nullable = false)
     @JsonIgnore
     private Memo memo;
