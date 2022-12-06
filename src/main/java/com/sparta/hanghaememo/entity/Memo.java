@@ -70,6 +70,9 @@ public class Memo extends Timestamped {
 
     @Column(nullable = false)       // 비밀번호
     private String password;
+    
+    @Column(nullable = false)       // 작성자 ID
+    private Long userid;
 
     @OneToMany
     @JoinColumn(name = "id")
@@ -77,11 +80,12 @@ public class Memo extends Timestamped {
 
 
     // Dto -> Entity
-    public Memo(MemoRequestDto requestDto, String username, String password){
+    public Memo(MemoRequestDto requestDto, String username, String password, Long userid){
         this.title      =   requestDto.getTitle();                  // 작성제목
         this.contents   =   requestDto.getContents();               // 작성내용
         this.username   =   username;                               // 작성자명
         this.password   =   password;                               // 비밀번호
+        this.userid     =   userid;                                 // 작성자 id
     }
 
     // Dto -> Entity and update

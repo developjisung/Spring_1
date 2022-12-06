@@ -49,7 +49,7 @@ public class CommentService {
             );
 
             // 4. DTO -> Entity 변환
-            Comment comment = new Comment(requestDto, id, user.getUsername());                          // DTO -> Entity
+            Comment comment = new Comment(requestDto, id, user.getUsername(), user.getId());                          // DTO -> Entity
 
             // 5. DB insert
             commentRepository.save(comment);                                                            // DB Save
@@ -86,7 +86,7 @@ public class CommentService {
                         () -> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다.")
                 );
 
-                if(comment.getUsername().equals(user.getUsername())){
+                if(comment.getUserid().equals(user.getId())){
                     comment.update(requestDto);                                                         // DB Update
                 }
                 else{
@@ -129,7 +129,7 @@ public class CommentService {
                 comment = commentRepository.findById(id).orElseThrow(                                   // find memo
                         () -> new IllegalArgumentException("해당하는 댓글이 존재하지 않습니다.")
                 );
-                if(comment.getUsername().equals(user.getUsername())){
+                if(comment.getUserid().equals(user.getId())){
                     commentRepository.deleteById(id);                                                   // DB Update
                 }
                 else{

@@ -59,10 +59,14 @@ public class Comment extends Timestamped{
     @Column(nullable = false)
     private String contents;        // 작성내용
 
-    public Comment(CommentRequestDto requestDto, Long id, String username){
+    @Column(nullable = false)       // 작성자 id
+    private Long userid;
+
+    public Comment(CommentRequestDto requestDto, Long id, String username, Long userid){
         this.contents   =   requestDto.getContent();        // 댓글 내용
         this.username   =   username;                       // 작성자명
         this.id         =   id;                             // 게시물 id
+        this.userid     =   userid;                         // 작성자 id
     }
 
     public void update(CommentRequestDto requestDto){
