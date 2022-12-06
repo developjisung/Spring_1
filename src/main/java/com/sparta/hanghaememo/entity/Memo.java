@@ -49,7 +49,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Entity
@@ -73,10 +72,6 @@ public class Memo extends Timestamped {
     
     @Column(nullable = false)       // 작성자 ID
     private Long userid;
-
-    @OneToMany
-    @JoinColumn(name = "id")
-    private List<Comment> comments;
 
 
     // Dto -> Entity

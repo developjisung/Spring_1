@@ -3,10 +3,12 @@ package com.sparta.hanghaememo.service;
 import com.sparta.hanghaememo.dto.MemoDto.MemoRequestDto;
 import com.sparta.hanghaememo.dto.MemoDto.MemoResponseDto;
 import com.sparta.hanghaememo.dto.ResponseDto;
+import com.sparta.hanghaememo.entity.Comment;
 import com.sparta.hanghaememo.entity.Memo;
 import com.sparta.hanghaememo.entity.User;
 import com.sparta.hanghaememo.entity.UserRoleEnum;
 import com.sparta.hanghaememo.jwt.JwtUtil;
+import com.sparta.hanghaememo.repository.CommentRepository;
 import com.sparta.hanghaememo.repository.MemoRepository;
 import com.sparta.hanghaememo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -16,14 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MemoService {
     private final UserRepository userRepository;                                                        // user repo connect
     private final MemoRepository memoRepository;                                                        // memo repo connect
+    private final CommentRepository commentRepository;                                                  // comment repo connect
     private final JwtUtil jwtUtil;
 
     // Memo Create function
@@ -56,7 +59,18 @@ public class MemoService {
     // Get memos from DB (all)
     public List<MemoResponseDto> getMemos() {
         List<Memo> ListMemo = memoRepository.findAllByOrderByModifiedAtDesc();                          // Select All
-        return ListMemo.stream().map(memo -> new MemoResponseDto(memo)).collect(Collectors.toList());   // Entity -> Response DTO
+
+        List<MemoResponseDto> ListResponseDto = new ArrayList<>();
+        for(Memo memo: ListMemo){
+            List<Comment> comments = commentRepository.findAllByMemo(memo);
+
+            if(comments.isEmpty()){
+                ListResponseDto.add(new MemoResponseDto(memo));
+            }else{
+                ListResponseDto.add(new MemoResponseDto(memo,(ArrayList<Comment>) comments));
+            }
+        }
+        return ListResponseDto;
     }
 
     // Get memo from DB (one)
@@ -64,7 +78,12 @@ public class MemoService {
          Memo memo = memoRepository.findById(id).orElseThrow(()->                                       // Select One
                  new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id)
          );
-        return new MemoResponseDto(memo);                                                               // Entity -> DTO
+         List<Comment> comment = commentRepository.findAllByMemo(memo);
+         if(comment.isEmpty()){
+             return new MemoResponseDto(memo);                                                               // Entity -> DTO
+         }else{
+             return new MemoResponseDto(memo, (ArrayList<Comment>) comment);
+         }
     }
 
     // DB update function

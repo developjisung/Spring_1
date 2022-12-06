@@ -36,6 +36,7 @@
 
 package com.sparta.hanghaememo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.hanghaememo.dto.CommentDto.CommentRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,8 +51,8 @@ public class Comment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long comment_id;        // 댓글 번호
-    @Column(nullable = false)
-    private Long id;                // 게시물 번호
+//    @Column(nullable = false)
+//    private Long id;                // 게시물 번호
 
     @Column(nullable = false)
     private String username;        // 작성자명
@@ -62,11 +63,16 @@ public class Comment extends Timestamped{
     @Column(nullable = false)       // 작성자 id
     private Long userid;
 
-    public Comment(CommentRequestDto requestDto, Long id, String username, Long userid){
+    @ManyToOne
+    @JoinColumn(name = "memo_id", nullable = false)
+    @JsonIgnore
+    private Memo memo;
+
+    public Comment(CommentRequestDto requestDto, String username, Long userid, Memo memo){
         this.contents   =   requestDto.getContent();        // 댓글 내용
         this.username   =   username;                       // 작성자명
-        this.id         =   id;                             // 게시물 id
         this.userid     =   userid;                         // 작성자 id
+        this.memo       =   memo;                           // Memo pk
     }
 
     public void update(CommentRequestDto requestDto){

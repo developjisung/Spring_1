@@ -26,9 +26,10 @@ public class CommentDto {
         private LocalDateTime createdAt;                    // 작성시간
         private LocalDateTime modifiedAt;                   // 수정시간
 
-        //Entity -> Dto
+
+        // Entity -> DTO
         public CommentResponseDto(Comment comment){
-            this.id         = comment.getId();              // ID
+            this.id         = comment.getComment_id();
             this.username   = comment.getUsername();        // 작성자명
             this.content    = comment.getContents();        // 작성내용
             this.createdAt  = comment.getCreatedAt();       // 작성시간

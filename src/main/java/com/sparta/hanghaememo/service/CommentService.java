@@ -5,6 +5,7 @@ import com.sparta.hanghaememo.dto.CommentDto.CommentRequestDto;
 import com.sparta.hanghaememo.dto.CommentDto.CommentResponseDto;
 import com.sparta.hanghaememo.dto.ResponseDto;
 import com.sparta.hanghaememo.entity.Comment;
+import com.sparta.hanghaememo.entity.Memo;
 import com.sparta.hanghaememo.entity.User;
 import com.sparta.hanghaememo.entity.UserRoleEnum;
 import com.sparta.hanghaememo.jwt.JwtUtil;
@@ -39,7 +40,7 @@ public class CommentService {
             claims = valid(token);
 
             // 3. 해당 게시물 존재 여부 확인
-            memoRepository.findById(id).orElseThrow(
+            Memo memo = memoRepository.findById(id).orElseThrow(
                     () -> new IllegalArgumentException("게시물이 존재하지 않습니다.")
             );
 
@@ -49,7 +50,7 @@ public class CommentService {
             );
 
             // 4. DTO -> Entity 변환
-            Comment comment = new Comment(requestDto, id, user.getUsername(), user.getId());                          // DTO -> Entity
+            Comment comment = new Comment(requestDto, user.getUsername(), user.getId(), memo);                          // DTO -> Entity
 
             // 5. DB insert
             commentRepository.save(comment);                                                            // DB Save
