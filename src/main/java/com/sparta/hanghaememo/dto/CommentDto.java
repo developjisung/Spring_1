@@ -1,5 +1,6 @@
 package com.sparta.hanghaememo.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.hanghaememo.entity.Comment;
 import lombok.Getter;
 
@@ -35,5 +36,19 @@ public class CommentDto {
             this.createdAt  = comment.getCreatedAt();       // 작성시간
             this.modifiedAt = comment.getModifiedAt();      // 수정시간
         }
+        ResponseDto a = new ResponseDto();
+
+        @JsonIgnore
+        @Override
+        public String getMsg(){
+            return super.getMsg();
+        }
+
+        @JsonIgnore
+        @Override
+        public int getStatusCode(){
+            return super.getStatusCode();
+        }
+
     }
 }

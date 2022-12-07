@@ -19,4 +19,13 @@ public class ResponseDto{                   // 로그인 및 회원가입 응답
         this.msg        = msg;              // 확인메세지
         this.statusCode = statusCode;       // 상태코드
     }
+
+//    public String getmsg(){
+//        return msg;
+//    }
+//
+//    public int getStatusCode(){
+//        return statusCode;
+//    }
+
 }
