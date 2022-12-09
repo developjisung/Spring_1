@@ -10,6 +10,7 @@ import com.sparta.hanghaememo.jwt.JwtUtil;
 import com.sparta.hanghaememo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;                                                    // user repo connect
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
@@ -28,7 +30,7 @@ public class UserService {
 
         // 1. USERNAME, PASSWORD SETTING
         String username = signupRequestDto.getUsername();                                           // username setting (DTO ->  val)
-        String password = signupRequestDto.getPassword();                                           // password setting (DTO ->  val)
+        String password = passwordEncoder.encode(signupRequestDto.getPassword());                                           // password setting (DTO ->  val)
 
         // 2. find user (duplicate user)
         Optional<User> found = userRepository.findByUsername(username);                             // 회원 중복 확인
