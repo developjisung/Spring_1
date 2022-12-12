@@ -18,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -107,46 +105,26 @@ public class CommentService {
 
     // DB insert
     @Transactional
-    public CommentLikeResponseDto createlike(Long id, User user) {
+    public CommentLikeResponseDto commentLike(Long id, User user) {
         // 1. 해당 게시물 존재 여부 확인
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find memo
                 () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
         );
 
-        Optional<CommentLike> found = commentLikeRepository.findByCommentAndUser(comment, user);
+        // 2. CommentLike repo에서 좋아요 현황 check
+        if(commentLikeRepository.findByCommentAndUser(comment, user).isPresent()){                  // CommentLike repo check
+            // 3. DB delete
+            commentLikeRepository.deleteByCommentAndUser(comment, user);                            // DB Delete
 
-        if (found.isPresent()) {                                                                    // isPresent - > found가 null이 아니라면 true 반환
-            throw new RestApiException(ErrorCode.ALREADY_CHECK_COMMENT);                            // isPresent - > Optional class에 존재하는 함수
+            // 4. DB update (comment count)
+            comment.update_count(comment.getCount() - 1);                                           // DB update
+        }else{
+            // 3. DB insert
+            commentLikeRepository.save(new CommentLike(comment, user));                             // DB insert
+
+            // 4. DB update (Comment count)
+            comment.update_count(comment.getCount() + 1);                                           // DB update
         }
-
-        // 2. DTO -> Entity 변환
-        CommentLike commentLike = new CommentLike(comment, user);
-
-        // 3. DB insert
-        commentLikeRepository.save(commentLike);
-
-        // 4. DB update (Comment count)
-        comment.update_count(comment.getCount() + 1);                                               // DB update
-
-        return new CommentLikeResponseDto(comment.getCount());
-    }
-
-    @Transactional
-    // DB Delete
-    public CommentLikeResponseDto deletelike(Long id, User user) {
-        // 1. Select Comment
-        Comment comment = commentRepository.findById(id).orElseThrow(                               // find comment
-                () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
-        );
-        // 2. Select CommentLike
-        commentLikeRepository.findByCommentAndUser(comment, user).orElseThrow(                      // find comment
-                () -> new RestApiException(ErrorCode.NOT_EXIST_LIKE_COMMENT)
-        );
-        // 3. DB delete
-        commentLikeRepository.deleteByCommentAndUser(comment, user);                                // delete commentlike
-
-        // 4. DB update (comment count)
-        comment.update_count(comment.getCount() - 1);
 
         return new CommentLikeResponseDto(comment.getCount());
     }

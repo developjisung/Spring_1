@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -139,47 +138,25 @@ public class MemoService {
 
     @Transactional
     // DB insert (MemoLike)
-    public MemoLikeResponseDto createlike(Long id, User user) {
+    public MemoLikeResponseDto memoLike(Long id, User user) {
         // 1. Select Memo
         Memo memo = memoRepository.findById(id).orElseThrow(
                 () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
         );
 
-        Optional<MemoLike> found = memoLikeRepository.findByMemoAndUser(memo, user);
+        // 2.MemoLike repo에서 좋아요 현황 check
+        if(memoLikeRepository.findByMemoAndUser(memo, user).isPresent()){                                   // MemoLike repo check
+            // 3. DB Delete
+            memoLikeRepository.deleteByMemoAndUser(memo, user);                                             // DB DELETE
 
-        if (found.isPresent()) {                                                                        // isPresent - > found가 null이 아니라면 true 반환
-            throw new RestApiException(ErrorCode.ALREADY_CHECK_MEMO);                                   // isPresent - > Optional class에 존재하는 함수
+            // 4. DB update (Memo count)
+            memo.update_count(memo.getCount() - 1);
+        }else{
+            // 3. DB insert
+            memoLikeRepository.save(new MemoLike(memo, user));                                              // DB Save
+            // 4. DB update (Memo count)
+            memo.update_count(memo.getCount() + 1);                                                         // DB update
         }
-
-        // 2. DTO -> Entity 변환
-        MemoLike memoLike = new MemoLike(memo, user);          // DTO -> Entity
-
-        // 3. DB insert
-        memoLikeRepository.save(memoLike);                                                              // DB Save
-
-        // 4. DB update (Memo count)
-        memo.update_count(memo.getCount() + 1);                                                         // DB update
-
-        return new MemoLikeResponseDto(memo.getCount());                                                // return Response  Entity -> DTO
-    }
-
-    @Transactional
-    // DB delete (MemoLike)
-    public MemoLikeResponseDto deletelike(Long id, User user) {
-        // 1. Select Memo
-        Memo memo = memoRepository.findById(id).orElseThrow(                                            // find memo
-                () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
-        );
-        // 2. Select MemoLike
-        memoLikeRepository.findByMemoAndUser(memo, user).orElseThrow(                                   // find memo
-                () -> new RestApiException(ErrorCode.NOT_EXIST_LIKE_MEMO)
-        );
-        // 3. DB Delete
-        memoLikeRepository.deleteByMemoAndUser(memo, user);                                             // DB DELETE
-
-        // 4. DB update (Memo count)
-        memo.update_count(memo.getCount() - 1);
-
         return  new MemoLikeResponseDto(memo.getCount());
     }
 }

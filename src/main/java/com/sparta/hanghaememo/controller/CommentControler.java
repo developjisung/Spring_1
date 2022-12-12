@@ -37,13 +37,7 @@ public class CommentControler {
 
     // DB insert (CommentLike)
     @PostMapping("/like/{id}")
-    public ResponseEntity<ResponseDto> createlike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok(commentService.createlike(id, userDetails.getUser()));
-    }
-
-    // DB delete (CommentLike)
-    @DeleteMapping("/like/no/{id}")
-    public ResponseEntity<ResponseDto> deletelike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok(commentService.deletelike(id, userDetails.getUser()));
+    public ResponseEntity<ResponseDto> commentLike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok(commentService.commentLike(id, userDetails.getUser()));
     }
 }

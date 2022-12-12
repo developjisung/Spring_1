@@ -48,13 +48,8 @@ public class MemoController {
     }
 
     @PostMapping("/memos/like/{id}")
-    public ResponseEntity<ResponseDto> createlike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok(memoService.createlike(id, userDetails.getUser()));
-    }
-
-    @DeleteMapping("/memos/like/no/{id}")
-    public ResponseEntity<ResponseDto> deletelike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok(memoService.deletelike(id, userDetails.getUser()));
+    public ResponseEntity<ResponseDto> memolike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok(memoService.memoLike(id, userDetails.getUser()));
     }
 }
 
