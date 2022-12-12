@@ -42,8 +42,9 @@ public class JwtUtil {
     @PostConstruct                                                                                  // PostConstruct는 의존성 주입이 이루어진 후, 초기화 수행함.
     public void init() {                                                                            // 해당 어노테이션을 통해, 로직을 타기 전 init 메소드가 알아서 수햄됨.
         byte[] bytes = Base64.getDecoder().decode(secretKey);
-        key = Keys.hmacShaKeyFor(bytes);
+         key = Keys.hmacShaKeyFor(bytes);
     }
+
 
     // header 토큰을 가져오기
     public String resolveToken(HttpServletRequest request) {                                        // request header에서 token 정보 가져오기

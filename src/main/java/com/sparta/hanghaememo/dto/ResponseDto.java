@@ -11,21 +11,12 @@ public class ResponseDto{                   // 로그인 및 회원가입 응답
     private int statusCode;                 // 상태코드
 
     public ResponseDto(){
-        this.msg = "성공";
-        this.statusCode = 200;
+        this.msg        =   "성공";
+        this.statusCode =   200;
     }
 
     public ResponseDto(String msg, int statusCode){
         this.msg        = msg;              // 확인메세지
         this.statusCode = statusCode;       // 상태코드
     }
-
-//    public String getmsg(){
-//        return msg;
-//    }
-//
-//    public int getStatusCode(){
-//        return statusCode;
-//    }
-
 }

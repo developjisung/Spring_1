@@ -49,8 +49,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -71,21 +69,18 @@ public class Memo extends Timestamped {
 
     @Column(nullable = false)       // 비밀번호
     private String password;
-    
-    @Column(nullable = false)       // 작성자 ID
-    private Long userid;
 
-    @OneToMany(mappedBy = "memo", cascade = CascadeType.REMOVE)
-    private List<Comment> comments = new ArrayList<>();
-
+    @ManyToOne                      // 작성자 ID
+    @JoinColumn(name = "userid", nullable = false)
+    private User user;
 
     // Dto -> Entity
-    public Memo(MemoRequestDto requestDto, String username, String password, Long userid){
+    public Memo(MemoRequestDto requestDto, String username, String password, User user){
         this.title      =   requestDto.getTitle();                  // 작성제목
         this.contents   =   requestDto.getContents();               // 작성내용
         this.username   =   username;                               // 작성자명
         this.password   =   password;                               // 비밀번호
-        this.userid     =   userid;                                 // 작성자 id
+        this.user       =   user;
     }
 
     // Dto -> Entity and update

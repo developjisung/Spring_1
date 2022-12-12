@@ -6,6 +6,8 @@ import com.sparta.hanghaememo.dto.UserDto.LoginRequestDto;
 import com.sparta.hanghaememo.dto.UserDto.SignupRequestDto;
 import com.sparta.hanghaememo.entity.User;
 import com.sparta.hanghaememo.entity.UserRoleEnum;
+import com.sparta.hanghaememo.exception.ErrorCode;
+import com.sparta.hanghaememo.exception.RestApiException;
 import com.sparta.hanghaememo.jwt.JwtUtil;
 import com.sparta.hanghaememo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +32,12 @@ public class UserService {
 
         // 1. USERNAME, PASSWORD SETTING
         String username = signupRequestDto.getUsername();                                           // username setting (DTO ->  val)
-        String password = passwordEncoder.encode(signupRequestDto.getPassword());                                           // password setting (DTO ->  val)
+        String password = passwordEncoder.encode(signupRequestDto.getPassword());                   // password setting (DTO ->  val)
 
         // 2. find user (duplicate user)
         Optional<User> found = userRepository.findByUsername(username);                             // 회원 중복 확인
         if (found.isPresent()) {                                                                    // isPresent - > found가 null이 아니라면 true 반환
-            throw new IllegalArgumentException("중복된 사용자명입니다.");                               // isPresent - > Optional class에 존재하는 함수
+            throw new RestApiException(ErrorCode.DUPLICATE_USER);
         }
 
         // 3. user role setting
@@ -44,7 +46,7 @@ public class UserService {
         // 4. admin user setting
         if (signupRequestDto.isAdmin()) {                                                           // isAdmin 등의 함수는 dto 내 boolean형 필드가 존재할 때
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {                            // @Getter를 통해 생성된다.
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new RestApiException(ErrorCode.WRONG_ADMIN_PASSWORD);
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -64,11 +66,11 @@ public class UserService {
 
         // 2. Check USERNAME, PASSWORD
         User user = userRepository.findByUsername(username).orElseThrow(                            // 사용자 확인
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new RestApiException(ErrorCode.NOT_FOUND_USER)
         );
 
-        if(!user.getPassword().equals(password)){                                                   // 비밀번호 비교
-            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        if(!passwordEncoder.matches(password, user.getPassword())){                                 // 비밀번호 비교
+            throw  new RestApiException(ErrorCode.WRONG_PASSWORD);
         }
 
         // 3. create Jwt and add to response header

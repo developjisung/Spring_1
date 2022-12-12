@@ -51,8 +51,6 @@ public class Comment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long comment_id;        // 댓글 번호
-//    @Column(nullable = false)
-//    private Long id;                // 게시물 번호
 
     @Column(nullable = false)
     private String username;        // 작성자명
@@ -60,19 +58,21 @@ public class Comment extends Timestamped{
     @Column(nullable = false)
     private String contents;        // 작성내용
 
-    @Column(nullable = false)       // 작성자 id
-    private Long userid;
-
-    @ManyToOne                      // 게시물 id
-    @JoinColumn(name = "memo_id", nullable = false)
+    @ManyToOne
     @JsonIgnore
-    private Memo memo;
+    @JoinColumn(name = "userid", nullable = false)
+    private User user;              // 작성자 id
 
-    public Comment(CommentRequestDto requestDto, String username, Long userid, Memo memo){
+    @ManyToOne
+    @JoinColumn(name = "memoid", nullable = false)
+    @JsonIgnore
+    private Memo memo;              // 게시굴 id
+
+    public Comment(CommentRequestDto requestDto, String username, Memo memo, User user){
         this.contents   =   requestDto.getContent();        // 댓글 내용
         this.username   =   username;                       // 작성자명
-        this.userid     =   userid;                         // 작성자 id
-        this.memo       =   memo;                           // Memo pk
+        this.user       =   user;                           // User FK
+        this.memo       =   memo;                           // Memo FK
     }
 
     public void update(CommentRequestDto requestDto){

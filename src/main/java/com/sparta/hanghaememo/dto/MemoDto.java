@@ -18,41 +18,41 @@ public class MemoDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class MemoRequestDto {                // 요청 Dto
+    public static class MemoRequestDto {                            // 요청 Dto
 
-        private String title;                           // 제목
-        private String contents;                        // 작성내용
+        private String title;                                       // 제목
+        private String contents;                                    // 작성내용
     }
 
 
     @Getter
-    public static class MemoResponseDto extends ResponseDto{                // 응답 Dto
-        private Long id;                                // id
-        private String title;                           // 제목
-        private String username;                        // 작성자명
-        private String contents;                        // 작성내용
+    public static class MemoResponseDto extends ResponseDto{        // 응답 Dto
+        private Long id;                                            // id
+        private String title;                                       // 제목
+        private String username;                                    // 작성자명
+        private String contents;                                    // 작성내용
 
         private ArrayList<Comment> commentArrayList;
-        private LocalDateTime createdAt;                // 작성시간
-        private LocalDateTime modifiedAt;               // 수정시간
+        private LocalDateTime createdAt;                            // 작성시간
+        private LocalDateTime modifiedAt;                           // 수정시간
 
         //Entity -> Dto
         public MemoResponseDto(Memo memo){
-            this.id         = memo.getId();             // ID
-            this.title      = memo.getTitle();          // 제목
-            this.username   = memo.getUsername();       // 작성자명
-            this.contents   = memo.getContents();       // 작성내용
-            this.createdAt  = memo.getCreatedAt();      // 작성시간
-            this.modifiedAt = memo.getModifiedAt();     // 수정시간
+            this.id         = memo.getId();                         // ID
+            this.title      = memo.getTitle();                      // 제목
+            this.username   = memo.getUsername();                   // 작성자명
+            this.contents   = memo.getContents();                   // 작성내용
+            this.createdAt  = memo.getCreatedAt();                  // 작성시간
+            this.modifiedAt = memo.getModifiedAt();                 // 수정시간
         }
 
         public MemoResponseDto(Memo memo, ArrayList<Comment> commentArrayList){
-            this.id         = memo.getId();             // ID
-            this.title      = memo.getTitle();          // 제목
-            this.username   = memo.getUsername();       // 작성자명
-            this.contents   = memo.getContents();       // 작성내용
-            this.createdAt  = memo.getCreatedAt();      // 작성시간
-            this.modifiedAt = memo.getModifiedAt();     // 수정시간
+            this.id         = memo.getId();                         // ID
+            this.title      = memo.getTitle();                      // 제목
+            this.username   = memo.getUsername();                   // 작성자명
+            this.contents   = memo.getContents();                   // 작성내용
+            this.createdAt  = memo.getCreatedAt();                  // 작성시간
+            this.modifiedAt = memo.getModifiedAt();                 // 수정시간
             this.commentArrayList = (ArrayList<Comment>)commentArrayList.clone();
         }
 
