@@ -73,6 +73,7 @@ public class CommentService {
         return new CommentResponseDto(comment);                                                     // Entity -> DTO 변환 후 반환
     }
 
+    // DB delete
     public ResponseDto deletecomment(Long id, User user){
         // 1. 유저 권한 GET
         UserRoleEnum userRoleEnum = user.getRole();
@@ -101,6 +102,7 @@ public class CommentService {
         return  new ResponseDto("삭제 성공", HttpStatus.OK.value());
     }
 
+    // DB insert
     public ResponseDto createlike(Long id, User user) {
         // 1. 해당 게시물 존재 여부 확인
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find memo
@@ -119,10 +121,9 @@ public class CommentService {
         // 3. DB insert
         commentLikeRepository.save(commentLike);
         return new ResponseDto("댓글 좋아요 등록 성공", HttpStatus.OK.value());
-
-
     }
 
+    // DB Delete
     public ResponseDto deletelike(Long id, User user) {
         // 1. Select Comment
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find comment

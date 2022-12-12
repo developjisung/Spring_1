@@ -136,6 +136,7 @@ public class MemoService {
         return  new ResponseDto("삭제 성공", HttpStatus.OK.value());
     }
 
+    // DB insert (MemoLike)
     public ResponseDto createlike(Long id, User user) {
         // 1. Select Memo
         Memo memo = memoRepository.findById(id).orElseThrow(
@@ -156,6 +157,7 @@ public class MemoService {
         return new ResponseDto("게시글 좋아요 등록 성공", HttpStatus.OK.value());                      // return Response  Entity -> DTO
     }
 
+    // DB delete (MemoLike)
     public ResponseDto deletelike(Long id, User user) {
         // 1. Select Memo
         Memo memo = memoRepository.findById(id).orElseThrow(                                            // find memo
