@@ -18,7 +18,7 @@ public class CommentControler {
     private final CommentService commentService;
 
     // DB insert (Comment)
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/{depth}")
     public ResponseEntity<ResponseDto> createComment(@PathVariable Long id, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
             return ResponseEntity.ok(commentService.createcomment(id,requestDto, userDetails.getUser()));
     }

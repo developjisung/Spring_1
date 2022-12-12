@@ -61,6 +61,13 @@ public class Comment extends Timestamped{
     @Column(nullable = false)       // 좋아요갯수
     private int count;
 
+    @Column(nullable = false)       // 부모 ID
+    private int parentNum;
+
+    @Column(nullable = false)       // 댓글 깊이
+    private int depth;
+
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "userid", nullable = false)

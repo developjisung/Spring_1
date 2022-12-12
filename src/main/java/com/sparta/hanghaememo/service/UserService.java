@@ -4,12 +4,14 @@ package com.sparta.hanghaememo.service;
 import com.sparta.hanghaememo.dto.ResponseDto;
 import com.sparta.hanghaememo.dto.UserDto.LoginRequestDto;
 import com.sparta.hanghaememo.dto.UserDto.SignupRequestDto;
+import com.sparta.hanghaememo.entity.Comment;
+import com.sparta.hanghaememo.entity.Memo;
 import com.sparta.hanghaememo.entity.User;
 import com.sparta.hanghaememo.entity.UserRoleEnum;
 import com.sparta.hanghaememo.exception.ErrorCode;
 import com.sparta.hanghaememo.exception.RestApiException;
 import com.sparta.hanghaememo.jwt.JwtUtil;
-import com.sparta.hanghaememo.repository.UserRepository;
+import com.sparta.hanghaememo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,16 +19,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;                                                    // user repo connect
+    private final MemoRepository memoRepository;
+    private final MemoLikeRepository memoLikeRepository;
+    private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
+    // 회원가입
     @Transactional
     public ResponseDto signup(SignupRequestDto signupRequestDto) {
 
@@ -57,6 +65,7 @@ public class UserService {
         return new ResponseDto("회원가입 성공", HttpStatus.OK.value());
     }
 
+    // 로그인
     @Transactional(readOnly = true)
     public ResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
 
@@ -76,5 +85,28 @@ public class UserService {
         // 3. create Jwt and add to response header
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
         return new ResponseDto("로그인 성공", HttpStatus.OK.value());
+    }
+
+    // 회원탈퇴
+    public ResponseDto quit(User user){
+        User quit_user = userRepository.findByUsername(user.getUsername()).orElseThrow(
+                () -> new RestApiException(ErrorCode.NOT_FOUND_USER)
+        );
+
+        List<Memo> memoList = memoRepository.findAllByUser(quit_user);
+
+        for(Memo memo : memoList){
+            memoLikeRepository.deleteAllByMemo(memo);
+            List<Comment> commentList = commentRepository.findAllByMemo(memo);
+            for(Comment comment: commentList){
+                commentLikeRepository.deleteAllByComment(comment);
+            }
+
+            commentRepository.deleteAllByMemo(memo);
+        }
+        memoRepository.deleteAllByUser(quit_user);
+        userRepository.deleteByUsername(quit_user.getUsername());
+
+        return  new ResponseDto("삭제 성공", HttpStatus.OK.value());
     }
 }
