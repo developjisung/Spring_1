@@ -58,6 +58,9 @@ public class Comment extends Timestamped{
     @Column(nullable = false)
     private String contents;        // 작성내용
 
+    @Column(nullable = false)       // 좋아요갯수
+    private int count;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "userid", nullable = false)
@@ -73,10 +76,13 @@ public class Comment extends Timestamped{
         this.username   =   username;                       // 작성자명
         this.user       =   user;                           // User FK
         this.memo       =   memo;                           // Memo FK
+        this.count      =   0;
     }
 
     public void update(CommentRequestDto requestDto){
         this.contents = requestDto.getContent();            // 댓글 내용
     }
+
+    public void update_count(int count){this.count = count;}
 }
 

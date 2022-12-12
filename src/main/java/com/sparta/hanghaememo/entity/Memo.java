@@ -70,6 +70,8 @@ public class Memo extends Timestamped {
     @Column(nullable = false)       // 비밀번호
     private String password;
 
+    @Column(nullable = false)       // 좋아요갯수
+    private int count;
     @ManyToOne                      // 작성자 ID
     @JoinColumn(name = "userid", nullable = false)
     private User user;
@@ -80,6 +82,7 @@ public class Memo extends Timestamped {
         this.contents   =   requestDto.getContents();               // 작성내용
         this.username   =   username;                               // 작성자명
         this.password   =   password;                               // 비밀번호
+        this.count      =   0;
         this.user       =   user;
     }
 
@@ -87,5 +90,9 @@ public class Memo extends Timestamped {
     public void update(MemoRequestDto requestDto) {
         this.title      =   requestDto.getTitle();                  // Setting Entity
         this.contents   =   requestDto.getContents();               // DTO -> Entity
+    }
+
+    public void update_count(int count){
+        this.count = count;
     }
 }

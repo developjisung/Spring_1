@@ -15,6 +15,7 @@ import com.sparta.hanghaememo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -102,7 +103,9 @@ public class CommentService {
         return  new ResponseDto("삭제 성공", HttpStatus.OK.value());
     }
 
+
     // DB insert
+    @Transactional
     public ResponseDto createlike(Long id, User user) {
         // 1. 해당 게시물 존재 여부 확인
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find memo
@@ -120,9 +123,14 @@ public class CommentService {
 
         // 3. DB insert
         commentLikeRepository.save(commentLike);
+
+        // 4. DB update (Comment count)
+        comment.update_count(comment.getCount() + 1);                                               // DB update
+
         return new ResponseDto("댓글 좋아요 등록 성공", HttpStatus.OK.value());
     }
 
+    @Transactional
     // DB Delete
     public ResponseDto deletelike(Long id, User user) {
         // 1. Select Comment
@@ -135,6 +143,13 @@ public class CommentService {
         );
         // 3. DB delete
         commentLikeRepository.deleteByCommentAndUser(comment, user);                                // delete commentlike
+
+        // 4. DB update (comment count)
+        if((comment.getCount() -1) < 0 ){                                                                  // DB update
+            comment.update_count(0);
+        }else{
+            comment.update_count(comment.getCount() - 1);
+        }
         return  new ResponseDto("댓글 좋아요 삭제 성공", HttpStatus.OK.value());
     }
 }

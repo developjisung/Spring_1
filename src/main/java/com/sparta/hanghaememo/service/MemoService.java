@@ -136,6 +136,7 @@ public class MemoService {
         return  new ResponseDto("삭제 성공", HttpStatus.OK.value());
     }
 
+    @Transactional
     // DB insert (MemoLike)
     public ResponseDto createlike(Long id, User user) {
         // 1. Select Memo
@@ -154,9 +155,14 @@ public class MemoService {
 
         // 3. DB insert
         memoLikeRepository.save(memoLike);                                                              // DB Save
+
+        // 4. DB update (Memo count)
+        memo.update_count(memo.getCount() + 1);                                                         // DB update
+
         return new ResponseDto("게시글 좋아요 등록 성공", HttpStatus.OK.value());                      // return Response  Entity -> DTO
     }
 
+    @Transactional
     // DB delete (MemoLike)
     public ResponseDto deletelike(Long id, User user) {
         // 1. Select Memo
@@ -169,6 +175,14 @@ public class MemoService {
         );
         // 3. DB Delete
         memoLikeRepository.deleteByMemoAndUser(memo, user);                                             // DB DELETE
+
+        // 4. DB update (Memo count)
+        if((memo.getCount() -1) < 0 ){                                                                  // DB update
+            memo.update_count(0);
+        }else{
+            memo.update_count(memo.getCount() - 1);
+        }
+
         return  new ResponseDto("게시글 좋아요 삭제 성공", HttpStatus.OK.value());
     }
 }
