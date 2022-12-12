@@ -25,13 +25,13 @@ import java.util.Optional;
 public class MemoService {
     private final MemoRepository memoRepository;                                                        // memo repo connect
     private final CommentRepository commentRepository;                                                  // comment repo connect
-    private final CommentLikeRepository commentLikeRepository;
-    private final MemoLikeRepository memoLikeRepository;                                                // memolike repo connect
+    private final CommentLikeRepository commentLikeRepository;                                          // commentLike repo connect
+    private final MemoLikeRepository memoLikeRepository;                                                // memoLike repo connect
     private final JwtUtil jwtUtil;
 
     // Memo Create function
     public  MemoResponseDto createMemo(MemoRequestDto requestDto, User user){
-
+        //1. create memo Object and insert DB
         Memo memo = new Memo(requestDto, user.getUsername(),user.getPassword(), user);                  // DTO -> Entity
         memoRepository.save(memo);                                                                      // DB Save
         return new MemoResponseDto(memo);                                                               // return Response  Entity -> DTO
@@ -39,6 +39,7 @@ public class MemoService {
 
     // Get memos from DB (all)
     public List<MemoResponseDto> getMemos() {
+        // 1. Select All Memo
         List<Memo> ListMemo = memoRepository.findAllByOrderByModifiedAtDesc();                          // Select All
 
         List<MemoResponseDto> ListResponseDto = new ArrayList<>();
@@ -56,25 +57,25 @@ public class MemoService {
 
     // Get memo from DB (one)
     public MemoResponseDto getMemo(long id){
-         Memo memo = memoRepository.findById(id).orElseThrow(()->                                       // Select One
-                 new RestApiException(ErrorCode.NOT_FOUND_MEMO)
-         );
-         List<Comment> comment = commentRepository.findAllByMemo(memo);
-         if(comment.isEmpty()){
-             return new MemoResponseDto(memo);                                                          // Entity -> DTO
-         }else{
-             return new MemoResponseDto(memo, (ArrayList<Comment>) comment);
-         }
+        Memo memo = memoRepository.findById(id).orElseThrow(()->                                        // Select one
+                new RestApiException(ErrorCode.NOT_FOUND_MEMO)
+        );
+        List<Comment> comment = commentRepository.findAllByMemo(memo);
+        if(comment.isEmpty()){
+            return new MemoResponseDto(memo);                                                          // Entity -> DTO
+        }else{
+            return new MemoResponseDto(memo, (ArrayList<Comment>) comment);
+        }
     }
 
     // DB update function
     @Transactional
     public MemoResponseDto update(Long id, MemoRequestDto requestDto, User user) {
-        // 4. 유저 권한 GET
+        // 1. 유저 권한 GET
         UserRoleEnum userRoleEnum = user.getRole();
         Memo memo;
 
-        // 5. 유저 권한에 따른 동작 방식 결정
+        // 2. 유저 권한에 따른 동작 방식 결정
         if(userRoleEnum == UserRoleEnum.USER){
             memo = memoRepository.findById(id).orElseThrow(                                             // find memo
                     () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
@@ -97,11 +98,11 @@ public class MemoService {
     // DB delete function (data delete)
 
     public ResponseDto deleteMemo(Long id, User user) {
-        // 4. 유저 권한 GET
+        // 1. 유저 권한 GET
         UserRoleEnum userRoleEnum = user.getRole();
         Memo memo;
 
-        // 5. 유저 권한에 따른 동작 방식 결정
+        // 2. 유저 권한에 따른 동작 방식 결정
         if(userRoleEnum == UserRoleEnum.USER){
             memo = memoRepository.findById(id).orElseThrow(                                             // find memo
                     () -> new RestApiException(ErrorCode.NOT_FOUND_ID)
@@ -136,6 +137,7 @@ public class MemoService {
     }
 
     public ResponseDto createlike(Long id, User user) {
+        // 1. Select Memo
         Memo memo = memoRepository.findById(id).orElseThrow(
                 () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
         );
@@ -146,23 +148,24 @@ public class MemoService {
             throw new RestApiException(ErrorCode.ALREADY_CHECK_MEMO);                                   // isPresent - > Optional class에 존재하는 함수
         }
 
-        // 4. DTO -> Entity 변환
+        // 2. DTO -> Entity 변환
         MemoLike memoLike = new MemoLike(memo, user);          // DTO -> Entity
 
-        // 5. DB insert
+        // 3. DB insert
         memoLikeRepository.save(memoLike);                                                              // DB Save
         return new ResponseDto("게시글 좋아요 등록 성공", HttpStatus.OK.value());                      // return Response  Entity -> DTO
     }
 
     public ResponseDto deletelike(Long id, User user) {
+        // 1. Select Memo
         Memo memo = memoRepository.findById(id).orElseThrow(                                            // find memo
                 () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
         );
-
+        // 2. Select MemoLike
         memoLikeRepository.findByMemoAndUser(memo, user).orElseThrow(                                   // find memo
                 () -> new RestApiException(ErrorCode.NOT_EXIST_LIKE_MEMO)
         );
-
+        // 3. DB Delete
         memoLikeRepository.deleteByMemoAndUser(memo, user);                                             // DB DELETE
         return  new ResponseDto("게시글 좋아요 삭제 성공", HttpStatus.OK.value());
     }

@@ -31,15 +31,15 @@ public class CommentService {
     // Comment create
     public CommentResponseDto createcomment(Long id, CommentRequestDto requestDto, User user){
 
-        // 3. 해당 게시물 존재 여부 확인
+        // 1. 해당 게시물 존재 여부 확인
         Memo memo = memoRepository.findById(id).orElseThrow(
                 () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
         );
 
-        // 4. DTO -> Entity 변환
+        // 2. DTO -> Entity 변환
         Comment comment = new Comment(requestDto, user.getUsername(), memo, user);                  // DTO -> Entity
 
-        // 5. DB insert
+        // 3. DB insert
         commentRepository.save(comment);                                                            // DB Save
         return new CommentResponseDto(comment);                                                     // return Response  Entity -> DTO
     }
@@ -47,11 +47,11 @@ public class CommentService {
 
     // DB update
     public CommentResponseDto updatecomment(Long id, CommentRequestDto requestDto, User user){
-        // 4. 유저 권한 GET
+        // 1. 유저 권한 GET
         UserRoleEnum userRoleEnum = user.getRole();
         Comment comment;
 
-        // 5. 유저 권한에 따른 동작 방식 결정
+        // 2. 유저 권한에 따른 동작 방식 결정
         if(userRoleEnum == UserRoleEnum.USER){
             comment = commentRepository.findById(id).orElseThrow(                                   // find memo
                     () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
@@ -74,11 +74,11 @@ public class CommentService {
     }
 
     public ResponseDto deletecomment(Long id, User user){
-        // 4. 유저 권한 GET
+        // 1. 유저 권한 GET
         UserRoleEnum userRoleEnum = user.getRole();
         Comment comment;
 
-        // 5. 유저 권한에 따른 동작 방식 결정
+        // 2. 유저 권한에 따른 동작 방식 결정
         if(userRoleEnum == UserRoleEnum.USER){
             comment = commentRepository.findById(id).orElseThrow(                                   // find memo
                     () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
@@ -102,7 +102,7 @@ public class CommentService {
     }
 
     public ResponseDto createlike(Long id, User user) {
-        // 3. 해당 게시물 존재 여부 확인
+        // 1. 해당 게시물 존재 여부 확인
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find memo
                 () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
         );
@@ -113,9 +113,10 @@ public class CommentService {
             throw new RestApiException(ErrorCode.ALREADY_CHECK_COMMENT);                            // isPresent - > Optional class에 존재하는 함수
         }
 
-        // 4. DTO -> Entity 변환
+        // 2. DTO -> Entity 변환
         CommentLike commentLike = new CommentLike(comment, user);
 
+        // 3. DB insert
         commentLikeRepository.save(commentLike);
         return new ResponseDto("댓글 좋아요 등록 성공", HttpStatus.OK.value());
 
@@ -123,14 +124,15 @@ public class CommentService {
     }
 
     public ResponseDto deletelike(Long id, User user) {
+        // 1. Select Comment
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find comment
                 () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
         );
-
+        // 2. Select CommentLike
         commentLikeRepository.findByCommentAndUser(comment, user).orElseThrow(                      // find comment
                 () -> new RestApiException(ErrorCode.NOT_EXIST_LIKE_COMMENT)
         );
-
+        // 3. DB delete
         commentLikeRepository.deleteByCommentAndUser(comment, user);                                // delete commentlike
         return  new ResponseDto("댓글 좋아요 삭제 성공", HttpStatus.OK.value());
     }
