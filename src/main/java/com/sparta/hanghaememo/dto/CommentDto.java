@@ -2,7 +2,9 @@ package com.sparta.hanghaememo.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.hanghaememo.entity.Comment;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -49,5 +51,12 @@ public class CommentDto {
             return super.getStatusCode();
         }
 
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CommentLikeResponseDto extends ResponseDto{
+        private int count;
     }
 }

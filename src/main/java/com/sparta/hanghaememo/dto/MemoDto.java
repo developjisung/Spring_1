@@ -58,4 +58,11 @@ public class MemoDto {
 
 
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MemoLikeResponseDto extends ResponseDto{
+        private int count;
+    }
 }

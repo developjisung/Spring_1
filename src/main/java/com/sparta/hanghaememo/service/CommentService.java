@@ -1,6 +1,7 @@
 package com.sparta.hanghaememo.service;
 
 
+import com.sparta.hanghaememo.dto.CommentDto.CommentLikeResponseDto;
 import com.sparta.hanghaememo.dto.CommentDto.CommentRequestDto;
 import com.sparta.hanghaememo.dto.CommentDto.CommentResponseDto;
 import com.sparta.hanghaememo.dto.ResponseDto;
@@ -106,7 +107,7 @@ public class CommentService {
 
     // DB insert
     @Transactional
-    public ResponseDto createlike(Long id, User user) {
+    public CommentLikeResponseDto createlike(Long id, User user) {
         // 1. 해당 게시물 존재 여부 확인
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find memo
                 () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
@@ -127,12 +128,12 @@ public class CommentService {
         // 4. DB update (Comment count)
         comment.update_count(comment.getCount() + 1);                                               // DB update
 
-        return new ResponseDto("댓글 좋아요 등록 성공", HttpStatus.OK.value());
+        return new CommentLikeResponseDto(comment.getCount());
     }
 
     @Transactional
     // DB Delete
-    public ResponseDto deletelike(Long id, User user) {
+    public CommentLikeResponseDto deletelike(Long id, User user) {
         // 1. Select Comment
         Comment comment = commentRepository.findById(id).orElseThrow(                               // find comment
                 () -> new RestApiException(ErrorCode.NOT_FOUND_COMMENT)
@@ -145,11 +146,8 @@ public class CommentService {
         commentLikeRepository.deleteByCommentAndUser(comment, user);                                // delete commentlike
 
         // 4. DB update (comment count)
-        if((comment.getCount() -1) < 0 ){                                                           // DB update
-            comment.update_count(0);
-        }else{
-            comment.update_count(comment.getCount() - 1);
-        }
-        return  new ResponseDto("댓글 좋아요 삭제 성공", HttpStatus.OK.value());
+        comment.update_count(comment.getCount() - 1);
+
+        return new CommentLikeResponseDto(comment.getCount());
     }
 }

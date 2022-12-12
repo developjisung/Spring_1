@@ -1,5 +1,6 @@
 package com.sparta.hanghaememo.service;
 
+import com.sparta.hanghaememo.dto.MemoDto.MemoLikeResponseDto;
 import com.sparta.hanghaememo.dto.MemoDto.MemoRequestDto;
 import com.sparta.hanghaememo.dto.MemoDto.MemoResponseDto;
 import com.sparta.hanghaememo.dto.ResponseDto;
@@ -138,7 +139,7 @@ public class MemoService {
 
     @Transactional
     // DB insert (MemoLike)
-    public ResponseDto createlike(Long id, User user) {
+    public MemoLikeResponseDto createlike(Long id, User user) {
         // 1. Select Memo
         Memo memo = memoRepository.findById(id).orElseThrow(
                 () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
@@ -159,12 +160,12 @@ public class MemoService {
         // 4. DB update (Memo count)
         memo.update_count(memo.getCount() + 1);                                                         // DB update
 
-        return new ResponseDto("게시글 좋아요 등록 성공", HttpStatus.OK.value());                      // return Response  Entity -> DTO
+        return new MemoLikeResponseDto(memo.getCount());                                                // return Response  Entity -> DTO
     }
 
     @Transactional
     // DB delete (MemoLike)
-    public ResponseDto deletelike(Long id, User user) {
+    public MemoLikeResponseDto deletelike(Long id, User user) {
         // 1. Select Memo
         Memo memo = memoRepository.findById(id).orElseThrow(                                            // find memo
                 () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
@@ -177,12 +178,8 @@ public class MemoService {
         memoLikeRepository.deleteByMemoAndUser(memo, user);                                             // DB DELETE
 
         // 4. DB update (Memo count)
-        if((memo.getCount() -1) < 0 ){                                                                  // DB update
-            memo.update_count(0);
-        }else{
-            memo.update_count(memo.getCount() - 1);
-        }
+        memo.update_count(memo.getCount() - 1);
 
-        return  new ResponseDto("게시글 좋아요 삭제 성공", HttpStatus.OK.value());
+        return  new MemoLikeResponseDto(memo.getCount());
     }
 }
