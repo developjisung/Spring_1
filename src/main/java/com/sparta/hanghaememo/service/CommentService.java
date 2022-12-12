@@ -145,7 +145,7 @@ public class CommentService {
         commentLikeRepository.deleteByCommentAndUser(comment, user);                                // delete commentlike
 
         // 4. DB update (comment count)
-        if((comment.getCount() -1) < 0 ){                                                                  // DB update
+        if((comment.getCount() -1) < 0 ){                                                           // DB update
             comment.update_count(0);
         }else{
             comment.update_count(comment.getCount() - 1);
