@@ -38,19 +38,26 @@ package com.sparta.hanghaememo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.hanghaememo.dto.CommentDto.CommentRequestDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
+@Builder
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Comment extends Timestamped{
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long comment_id;        // 댓글 번호
+    private Long id;        // 댓글 번호
 
     @Column(nullable = false)
     private String username;        // 작성자명
@@ -61,22 +68,25 @@ public class Comment extends Timestamped{
     @Column(nullable = false)       // 좋아요갯수
     private int count;
 
-    @Column(nullable = false)       // 부모 ID
-    private int parentNum;
-
-    @Column(nullable = false)       // 댓글 깊이
-    private int depth;
-
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "userid", nullable = false)
     private User user;              // 작성자 id
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memoid", nullable = false)
     @JsonIgnore
     private Memo memo;              // 게시굴 id
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;         // 부모 댓글
+
+    @Builder.Default
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent", orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>(); // 자식 댓글
+
+
 
     public Comment(CommentRequestDto requestDto, String username, Memo memo, User user){
         this.contents   =   requestDto.getContent();        // 댓글 내용
@@ -91,5 +101,9 @@ public class Comment extends Timestamped{
     }
 
     public void update_count(int count){this.count = count;}
+
+    public void update_children(Comment comment){
+        this.children.add(comment);
+    }
 }
 

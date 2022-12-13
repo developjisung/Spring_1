@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-
-
     DUPLICATE_USER(             HttpStatus.BAD_REQUEST, "중복된 사용자입니다"),
     WRONG_PASSWORD(             HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     WRONG_ADMIN_PASSWORD(       HttpStatus.BAD_REQUEST, "관리자 암호가 틀려 등록이 불가능합니다."),

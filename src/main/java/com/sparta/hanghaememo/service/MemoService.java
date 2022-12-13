@@ -145,7 +145,7 @@ public class MemoService {
         );
 
         // 2.MemoLike repo에서 좋아요 현황 check
-        if(memoLikeRepository.findByMemoAndUser(memo, user).isPresent()){                                   // MemoLike repo check
+            if(memoLikeRepository.findByMemoAndUser(memo, user).isPresent()){                                   // MemoLike repo check
             // 3. DB Delete
             memoLikeRepository.deleteByMemoAndUser(memo, user);                                             // DB DELETE
 

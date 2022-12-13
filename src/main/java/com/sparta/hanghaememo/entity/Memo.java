@@ -58,21 +58,21 @@ public class Memo extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)       // 제목
+    @Column(nullable = false)               // 제목
     private String title;
 
-    @Column(nullable = false)       // 작성자명
+    @Column(nullable = false)               // 작성자명
     private String username;
 
-    @Column(nullable = false)       // 작성내용
+    @Column(nullable = false)               // 작성내용
     private String contents;
 
-    @Column(nullable = false)       // 비밀번호
+    @Column(nullable = false)               // 비밀번호
     private String password;
 
-    @Column(nullable = false)       // 좋아요갯수
+    @Column(nullable = false)               // 좋아요갯수
     private int count;
-    @ManyToOne                      // 작성자 ID
+    @ManyToOne(fetch = FetchType.LAZY)      // 작성자 ID
     @JoinColumn(name = "userid", nullable = false)
     private User user;
 

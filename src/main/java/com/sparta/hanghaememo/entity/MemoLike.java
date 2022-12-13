@@ -13,12 +13,12 @@ public class MemoLike extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;            // 게시글 좋아요 ID
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memoid", nullable = false)
     private Memo memo;          // 게시글 ID
 
-    @ManyToOne
-    @JoinColumn(name = "userid", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userid", nullable = false)            // PK
     private User user;          // 작성자 ID
 
     // Dto -> Entity

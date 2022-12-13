@@ -29,19 +29,40 @@ public class CommentService {
     private final JwtUtil jwtUtil;
 
     // Comment create
-    public CommentResponseDto createcomment(Long id, CommentRequestDto requestDto, User user){
-
+    public CommentResponseDto createcomment(Long id, Long comment_id, CommentRequestDto requestDto, User user){
         // 1. 해당 게시물 존재 여부 확인
         Memo memo = memoRepository.findById(id).orElseThrow(
                 () -> new RestApiException(ErrorCode.NOT_FOUND_MEMO)
         );
 
-        // 2. DTO -> Entity 변환
-        Comment comment = new Comment(requestDto, user.getUsername(), memo, user);                  // DTO -> Entity
+        Comment parent_memo = commentRepository.findByMemoAndId(memo, comment_id);
 
-        // 3. DB insert
-        commentRepository.save(comment);                                                            // DB Save
-        return new CommentResponseDto(comment);                                                     // return Response  Entity -> DTO
+        if(parent_memo == null){
+            // 2. DTO -> Entity 변환
+            Comment comment = new Comment(requestDto, user.getUsername(), memo, user);                  // DTO -> Entity
+
+            // 3. DB insert
+            commentRepository.save(comment);
+            return new CommentResponseDto(comment);                                                     // return Response  Entity -> DTO
+        } else{
+                // 2. DTO -> Entity 변환
+                Comment child_comment = Comment.builder()
+//                        .id(parent_memo.getChildren().get(parent_memo.getChildren().size() - 1).getId() + 1)
+                        .username(user.getUsername())
+                        .contents(requestDto.getContent())
+                        .count(0)
+                        .user(user)
+                        .memo(memo)
+                        .parent(parent_memo)
+                        .build();
+
+                // 3. DB insert
+                commentRepository.save(child_comment);
+                parent_memo.update_children(child_comment);
+                return new CommentResponseDto(child_comment);                                                     // return Response  Entity -> DTO
+        }
+//        commentRepository.save(comment);                                                            // DB Save
+//        return new CommentResponseDto(comment);                                                     // return Response  Entity -> DTO
     }
 
 

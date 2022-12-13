@@ -32,7 +32,7 @@ public class CommentDto {
 
         // Entity -> DTO
         public CommentResponseDto(Comment comment){
-            this.id         = comment.getComment_id();              // 댓글 id
+            this.id         = comment.getId();              // 댓글 id
             this.username   = comment.getUsername();                // 작성자명
             this.content    = comment.getContents();                // 작성내용
             this.createdAt  = comment.getCreatedAt();               // 작성시간
