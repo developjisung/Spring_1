@@ -47,7 +47,6 @@ public class CommentService {
         } else{
                 // 2. DTO -> Entity 변환
                 Comment child_comment = Comment.builder()
-//                        .id(parent_memo.getChildren().get(parent_memo.getChildren().size() - 1).getId() + 1)
                         .username(user.getUsername())
                         .contents(requestDto.getContent())
                         .count(0)
@@ -61,8 +60,6 @@ public class CommentService {
                 parent_memo.update_children(child_comment);
                 return new CommentResponseDto(child_comment);                                                     // return Response  Entity -> DTO
         }
-//        commentRepository.save(comment);                                                            // DB Save
-//        return new CommentResponseDto(comment);                                                     // return Response  Entity -> DTO
     }
 
 

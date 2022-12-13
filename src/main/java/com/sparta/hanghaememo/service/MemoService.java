@@ -49,7 +49,13 @@ public class MemoService {
             if(comments.isEmpty()){
                 ListResponseDto.add(new MemoResponseDto(memo));
             }else{
-                ListResponseDto.add(new MemoResponseDto(memo,(ArrayList<Comment>) comments));
+                List<Comment> no_parent_comment = new ArrayList<>();
+                for(Comment comment : comments){
+                    if(comment.getParent() == null){
+                        no_parent_comment.add(comment);
+                    }
+                }
+                ListResponseDto.add(new MemoResponseDto(memo,(ArrayList<Comment>) no_parent_comment));
             }
         }
         return ListResponseDto;

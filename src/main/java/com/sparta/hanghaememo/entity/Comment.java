@@ -79,6 +79,7 @@ public class Comment extends Timestamped{
     private Memo memo;              // 게시굴 id
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "parent_id")
     private Comment parent;         // 부모 댓글
 
